@@ -1,0 +1,41 @@
+{%extends 'main.html' %}
+
+{% block content %}
+<h1>{{user.username}}</h1>
+
+
+<div class="container mt-4"></div>
+    <div class="home-container">
+
+        <div>
+            {% include 'base/topics_component.html' %}
+        </div>
+        
+        <div id="rooms">
+            <div class="room-count mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    
+                        <h6>CEREBRO ROOMS HOSTED BY {{user.username}}</h6>
+
+                </div>
+            </div>
+
+            <hr class="mt-2 mb-4">
+
+            <div class="room-list-container">
+                <div class="room-list">
+                    {% include 'base/feeds_component.html' %}
+                </div>
+            </div>
+        </div>
+
+        <div id="feeds">
+            {% include 'base/activity_component.html' %}
+        </div>
+        
+    </div>
+</div>
+
+
+
+{% endblock %}

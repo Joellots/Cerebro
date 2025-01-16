@@ -1,0 +1,21 @@
+
+<h5>BROWSE TOPICS</h5>
+<hr>
+
+<div class="mb-2">
+    {% if page == 'profile' %}
+        <a href="{% url 'profile' pk %}" class="btn btn-link">All</a>
+    {% else %}
+        <a href="{% url 'home' %}" class="btn btn-link">All</a>
+    {% endif %}
+</div>
+
+{% for topic in topics %}
+    <div class="mb-2">
+        {% if page == 'profile' %}
+            <a href="{% url 'profile' pk %}?q={{topic.name}}" class="btn btn-link">{{topic.name}}</a>
+        {% else %}
+            <a href="{% url 'home' %}?q={{topic.name}}" class="btn btn-link">{{topic.name}}</a>
+        {% endif %}
+    </div>
+{% endfor %}
