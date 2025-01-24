@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from .utils import check_toxicity
 
 
 
@@ -126,13 +127,30 @@ def room(request, pk):
     participants = room.participants.all()
 
     if request.method == 'POST':
+        body = request.POST.get('body')
+
+        analyze_request = {
+            'comment': { 'text': body },
+            'requestedAttributes': {'TOXICITY': {}}
+            }
+        
+        toxicity_score = check_toxicity(analyze_request)
+        
+        if toxicity_score > 0.5: 
+            error_message = "This comment contains inappropriate content and cannot be posted."
+            messages.error(request, error_message)
+            return redirect('room', pk=pk)
+
+        if body.strip() == '':
+            messages.error(request, "Please Provide a Valid Comment")
+            return redirect('room', pk=pk)
         message = Message.objects.create(
             user = request.user,
             room = room,
-            body = request.POST.get('body')
+            body = body,
         )
         room.participants.add(request.user)
-        return redirect('room', pk=room.id)
+        return redirect('room', pk=pk)
     context = {
         'room': room, 
         'room_messages': room_messages, 
@@ -165,26 +183,45 @@ def deleteMessage(request, pk):
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm(user=request.user)
-
+    topics = Topic.objects.all()
+    page = 'create-room'
+    
     if request.user.is_authenticated:
         if request.method == 'POST':
             form = RoomForm(request.POST, user=request.user)
-            
-            if form.is_valid():
-                room = form.save(commit=False)
-                if not request.user.is_staff:
-                    if room.host != request.user:
-                        room.host = request.user  # Ensure the current user is set as the host
-                    room.save()
+            topic_name = request.POST.get('topic')
+
+            try:
+                topic_name = int(topic_name)
+                topic = Topic.objects.get(name=Topic.objects.get(id=topic_name))
+            except:
+                if topic.name in Topic.objects.values_list('name', flat=True):
+                    topic = Topic.objects.get(name=Topic.objects.get(id=topic_name))
                 else:
-                    room.save()
+                    topic = Topic.objects.create(name=topic_name)
+                    
+
+            if form.is_valid():
+                host = form.cleaned_data['host']
+                name = form.cleaned_data['name']
+                description = form.cleaned_data['description']
+
+                
+                # room.set.topic(topic=topic)
+                # room.name.set(name=name)
+                # room.description.set(description=description)
+
+                if not request.user.is_staff:
+                    host = request.user  # Ensure the current user is set as the host
+               
+                room = Room.objects.create(host=host, topic=topic, name=name, description=description)
+                room.save()
                 return redirect('home')
-            
-            print(form)
-            messages.error(request, "An error occurred during Room Creation")
+
+            messages.error(request, "An Error Occurred during Room Creation")
             return redirect('create-room')
 
-        context={"form": form}
+        context={"form": form, "topics": topics, 'page': page}
         return render(request, 'base/room_form.html', context)
     else:
         return redirect('login')
@@ -194,27 +231,49 @@ def createRoom(request):
 def updateRoom(request, pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room, user=request.user)
-
+    topics = Topic.objects.all()
+    page = 'update-room'
     if request.user.is_authenticated:
 
         if request.user == room.host or request.user.is_staff:
             if request.method == 'POST':
                 form = RoomForm(request.POST, instance=room, user=request.user)
-                if form.is_valid():
-                    room = form.save(commit=False)
-                    if not request.user.is_staff:
-                        if room.host != request.user:
-                            room.host = request.user  # Ensure the current user is set as the host
-                            room.save()
-                    else:
-                        room.save()
-                    return redirect('home')
+                topic_name = request.POST.get('topic')
+
                 
-                context = {'form': form}
+                try:
+                    topic_name = int(topic_name)
+                    topic = Topic.objects.get(name=Topic.objects.get(id=topic_name))
+                except:
+                    if topic.name in Topic.objects.values_list('name', flat=True):
+                        topic = Topic.objects.get(name=Topic.objects.get(id=topic_name))
+                    else:
+                        topic = Topic.objects.create(name=topic_name)
+                        
+
+                if form.is_valid():
+                    host = form.cleaned_data['host']
+                    name = form.cleaned_data['name']
+                    description = form.cleaned_data['description']
+
+                    room.topic.name = topic
+                    room.name = name
+                    room.description = description
+
+                    if not request.user.is_staff:
+                        room.host = request.user  # Ensure the current user is set as the host
+                        room.save()
+                    else:
+                        room.host = host
+                    room.save()
+                    return redirect('home')
+               
+                messages.error(request, "An Error Occurred during Room Update")
+                context = {'form': form, 'topics': topics}
                 return render(request, 'base/room_form.html', context)
             else:
                 form = RoomForm(instance=room, user=request.user)
-                return render(request, 'base/room_form.html', {'form': form})
+                return render(request, 'base/room_form.html', {'form': form, 'topics': topics, "page": page})
         else:
             return HttpResponse('Permission Denied')
             

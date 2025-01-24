@@ -17,7 +17,7 @@ class RoomForm(ModelForm):
 		user = kwargs.pop('user', None)
 		super(RoomForm, self).__init__(*args, **kwargs)	
 		if user.is_authenticated:
-			self.fields['topic'] = forms.ModelChoiceField(queryset=Topic.objects.all(), required=False)
+			self.fields['topic'] = forms.ModelChoiceField(queryset=Topic.objects.all(), required=True)
 
 			self.fields['description'].widget.attrs.update({'placeholder': 'Enter room description...'})
 			self.fields['name'].widget.attrs.update({'placeholder': 'Enter room name...'})
