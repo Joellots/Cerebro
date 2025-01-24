@@ -12,17 +12,6 @@ from django.contrib.auth.models import User
 from .utils import check_toxicity
 
 
-
-# Create your views here.
-
-
-# rooms = [
-#     {'id': 1, 'name': 'Lets learn Python'},
-#     {'id': 2, 'name': 'Designers assemble'},
-#     {'id': 3, 'name': 'Frontend Devs'},
-# ]
-
-
 def loginPage(request):
     page = 'login'
     next_url = request.GET.get('next', 'login')
