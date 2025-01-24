@@ -2,10 +2,10 @@
 
 {% block content %}
 <div class="room-main mt-4">
-  <div class="row">
+  <div class="row d-flex flex-column flex-md-row">
     <!-- Study Room Container -->
-    <div class="col-md-8">
-      <div class="study-room container border shadow-sm p-4 rounded">
+    <div class="col-12 col-md-8 mb-4 mb-md-0">
+      <div class="study-room container border shadow-sm p-4 rounded pb-4">
         <div class="d-flex justify-content-between align-items-center">
           <h2 class="text-primary">{{ room.name }}</h2>
           <span class="text-muted"><small>{{ room.created|timesince }} ago</small></span>
@@ -30,17 +30,21 @@
             <div class="comments-scrollable">
               {% for message in room_messages %}
                 <div class="comment-item mb-3">
-                  {% if request.user == message.user or request.user.is_staff %}
-                    <!-- Optional: Add Delete Button Here -->
-                  {% endif %}
-                  
-                  <small class="text-muted">@{{ message.user }}--{{ message.created|timesince }} ago</small>
+                  <div class="d-flex justify-content-between gap-2 mt-2">
+                    <small class="text-muted"><strong>@{{ message.user }}</strong> -- {{ message.created|timesince }} ago</small>
+
+                    {% if request.user == message.user or request.user.is_staff %}
+                      <a href="{% url 'delete-message' message.id %}" class="btn btn-outline-danger btn-sm" aria-label="Delete message"><small>Delete</small></a>
+                    {% endif %}
+                  </div>
                   <p class="comment-body">{{ message.body }}</p>
                   <hr class="mt-2 mb-4">
                 </div>
               {% endfor %}
             </div>
           </div>
+        {% else %}
+          <p>No comments yet. Be the first to post!</p>
         {% endif %}
 
         <!-- Comment Form -->
@@ -58,20 +62,27 @@
     </div>
 
     <!-- Participants Container -->
-    <div class="col-md-4">
-      <div id="participants" class="container border shadow-sm p-4 rounded">
+    <div id="participants" class="col-12 col-md-4 mb-4 mb-md-0">
+      <div class="container border shadow-sm p-4 rounded pb-4">
         <div class="d-flex justify-content-between align-items-center">
           <h4 class="text-primary">PARTICIPANTS</h4>
-          <span class="text-muted">({{ room.participants.count }} joined)</span>
+          <span class="text-muted">
+            <i class="bi bi-person-circle"></i> {{ room.participants.count }} joined
+          </span>          
         </div>
         <hr class="mt-2 mb-4">
         {% for user in participants %}
           <div class="participant-item mb-2">
-            <p><a href="{% url 'profile' user.id %}" class="text-dark">@{{ user.username }}</a></p>
+            <a href="{% url 'profile' user.id %}" class="text-dark"><i class="bi bi-person"></i> {{ user.username }}</a>
           </div>
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelector('input[name="body"]').focus();
+</script>
+
 {% endblock %}

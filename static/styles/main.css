@@ -1,20 +1,19 @@
+
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 /* Scrollable container for the room-list */
 .room-list-container {
     max-height: 400px; /* Set a max-height for the scrollable area */
     overflow-y: scroll; /* Enable vertical scrolling */
     padding-right: 10px; /* Optional: Add some padding to the right to prevent scrollbar overlap */
     margin-top: 10px; /* Add a little spacing at the top */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+    scrollbar-width: none; /* For Firefox */
 }
 
 /* Hide the scrollbar for the room list */
 .room-list-container::-webkit-scrollbar {
     width: 0px; /* Remove the scrollbar */
     background: transparent; /* Optional: Make the background transparent */
-}
-
-.room-list-container {
-    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
-    scrollbar-width: none; /* For Firefox */
 }
 
 /* Room list (without borders or shadows) */
@@ -25,6 +24,32 @@
     padding: 0; /* Remove any extra padding if present */
     overflow: hidden; /* Prevents scrollbar in the room list itself */
 }
+/* Scrollable container for the room-list */
+.activity-list-container {
+    max-height: 400px; /* Set a max-height for the scrollable area */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    padding-right: 10px; /* Optional: Add some padding to the right to prevent scrollbar overlap */
+    margin-top: 10px; /* Add a little spacing at the top */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+    scrollbar-width: none; /* For Firefox */
+
+    min-width: 320px;
+    max-width: 350px; /* Set the desired maximum width */
+    overflow: hidden; /* Prevents any overflow */
+    padding: 15px; 
+}
+
+
+#home-topics {
+    min-width: 225px;
+    max-width: 250px;
+    overflow: hidden;
+    padding: 15px;
+}
+
+#rooms {
+    min-width: 450px;
+}
 
 /* Hide the scrollbar for the #feeds component (assuming feeds_component.html content is inside #feeds) */
 #feeds::-webkit-scrollbar {
@@ -32,13 +57,18 @@
     background: transparent; /* Optional: Make the background transparent */
 }
 
-#feeds {
+
+
+#participants {
     -ms-overflow-style: none;  /* For Internet Explorer and Edge */
     scrollbar-width: none; /* For Firefox */
     min-height: 300px; /* Set the desired minimum height */
+    min-width: 350px;
+    max-width: 400px; /* Set the desired maximum width */
     overflow: hidden; /* Prevents any overflow */
     padding: 15px; 
 }
+
 
 /* Style for each room container */
 .room-container {
@@ -90,7 +120,7 @@
 /* Styling for the entire home container (remains the same) */
 .home-container {
     display: grid;
-    grid-template-columns: 1fr 3fr 1.7fr;
+    grid-template-columns: 0.8fr 3fr 1.7fr;
     gap: 20px; /* Space between grid items */
 }
 

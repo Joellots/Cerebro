@@ -3,22 +3,22 @@
 {% block content %}
 
 <div class="container mt-4">
-    <div class="home-container">
+    <div class="home-container d-flex flex-column flex-md-row">
         <!-- Left Section (Topics) -->
-        <div>
+        <div id="home-topics" class="flex-fill mb-3 mb-md-0">
             {% include 'base/topics_component.html' %}
         </div>
 
         <!-- Middle Section (Feeds and Room Count) -->
-        <div id="rooms">
+        <div id="rooms" class="flex-fill mb-3 mb-md-0" style="flex-grow: 2;">
             <!-- Room count section -->
             <div class="room-count mb-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <h5><strong>CEREBRO ROOMS</strong></h5>
+                    <h4><strong>CEREBRO ROOMS</strong></h4>
                     {% if room_count == 1 %}
-                        <medium>{{ room_count }} room available</medium>
+                        <i class="bi bi-building-fill-gear"></i><medium> {{ room_count }} room available</medium>
                     {% else %}
-                        <medium>{{ room_count }} rooms available</medium>
+                        <i class="bi bi-building-fill-gear"></i><medium> {{ room_count }} rooms available</medium>
                     {% endif %}
                 </div>
                 <!-- Create Room Button Section -->
@@ -31,7 +31,7 @@
                 </div>
             </div>
         
-            <hr>
+            <hr class="mt-2 mb-4">
         
             <!-- Feeds Component (Room Listings) -->
             <div class="room-list-container">
@@ -43,8 +43,10 @@
         
         
         <!-- Right Section (Activity) -->
-        <div id="feeds">
-            {% include 'base/activity_component.html' %}
+        <div class="activity-list-container mb-3">
+            <div id="feeds" class="flex-fill mb-3 mb-md-0">
+                {% include 'base/activity_component.html' %}
+            </div>
         </div>
     </div>
 </div>
