@@ -1,0 +1,40 @@
+<div>
+    {% if rooms %}
+    {% for room in rooms %}
+        <div class="mb-3 room-container"> <!-- Added a new container class for each room -->
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Room Host (left) -->
+                <span><a href="{% url 'profile' room.host.id %}" class="text-muted">@{{room.host.username}}</a></span>
+                <!-- Time Created (right) -->
+                <span><small>{{room.created|timesince}} ago</small></span>
+            </div>
+            <h5><a href="{% url 'room' room.id %}" class="text-primary">{{room.name}}</a></h5>
+            <medium class="text-secondary">{{room.topic.name}}</medium>
+            
+            {% if user == room.host or user.is_staff %}
+                {% if page != 'profile' %}
+                    <div class="d-flex justify-content-between gap-2 mt-2">
+                        <!-- Edit Button (far left) -->
+                        <a href="{% url 'update-room' room.id %}" class="btn btn-outline-primary btn-sm">
+                            <small>Edit</small>
+                        </a>
+                        <!-- Delete Button (far right) -->
+                        <a href="{% url 'delete-room' room.id %}" class="btn btn-outline-danger btn-sm">
+                            <small>Delete</small>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <hr>
+
+            <small class="text-muted">
+                <i class="bi bi-person-check"></i> {{room.participants.count}} joined
+            </small>
+        </div>
+    {% endfor %}
+    {% else %}
+        <p>No rooms available.</p>
+    {% endif %}
+
+</div>

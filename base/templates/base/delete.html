@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title text-danger">Confirm Deletion</h4>
+        
+        <!-- Check if object exists -->
+        {% if obj %}
+          <p class="card-text">Are you sure you want to delete the item: <strong>{{ obj }}</strong>? This action cannot be undone.</p>
+          
+          <form method="POST" action="">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+              <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Go Back</a>
+              <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </div>
+          </form>
+        {% else %}
+          <p class="text-danger">The item could not be found or has already been deleted.</p>
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>
+{% endblock %}

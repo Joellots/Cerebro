@@ -1,0 +1,55 @@
+    
+<nav class="navbar navbar-expand-lg bg-body-tertiary navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+   
+        <a class="navbar-brand" href="/">Cerebro</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+      
+      
+
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    {% if page != 'rooms' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Rooms</a>
+                    </li>
+                    {% endif %}
+
+                    {% if page != 'login' %}
+                    <li class="nav-item"></li>
+                        <a class="nav-link" href="{% url 'login' %}">Home</a>
+                    </li>
+                    {% endif %}
+    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                </ul>
+                <form class="d-flex ml-auto" role="search" method="GET" action="{% url 'home' %}">
+                    <input type="text" name="q" class="form-control me-auto mb-lg-0" placeholder="Search Rooms..." />
+                </form>
+                {% else %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+                    {% if page != 'rooms' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Explore Rooms</a>
+                    </li>
+                    {% endif %}
+                    
+                    
+                    {% if page != 'login' and page != 'register' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+        </div>
+    </div>
+</nav>

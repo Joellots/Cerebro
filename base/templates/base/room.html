@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="room-main mt-4">
+  <div class="row d-flex flex-column flex-md-row">
+    <!-- Study Room Container -->
+    <div class="col-12 col-md-8 mb-4 mb-md-0">
+      <div class="study-room container border shadow-sm p-4 rounded pb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="text-primary">{{ room.name }}</h2>
+          <span class="text-muted"><small>{{ room.created|timesince }} ago</small></span>
+        </div>
+
+        <div class="mb-3">
+          <small class="text-muted">HOSTED BY</small>
+          <small><i><a href="{% url 'profile' room.host.id %}" class="text-primary">@{{ room.host.username }}</a></i></small>
+        </div>
+
+        <h5 class="text-secondary">{{ room.topic.name }}</h5>
+
+        <hr class="mt-2 mb-4">
+
+        <p>{{ room.description }}</p>
+
+        <hr class="mt-2 mb-4">
+
+        <!-- Comments Section -->
+        {% if room_messages %}
+          <div class="comment-wrapper">
+            <div class="comments-scrollable">
+              {% for message in room_messages %}
+                <div class="comment-item mb-3">
+                  <div class="d-flex justify-content-between gap-2 mt-2">
+                    <small class="text-muted"><strong>@{{ message.user }}</strong> -- {{ message.created|timesince }} ago</small>
+
+                    {% if request.user == message.user or request.user.is_staff %}
+                      <a href="{% url 'delete-message' message.id %}" class="btn btn-outline-danger btn-sm" aria-label="Delete message"><small>Delete</small></a>
+                    {% endif %}
+                  </div>
+                  <p class="comment-body">{{ message.body }}</p>
+                  <hr class="mt-2 mb-4">
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <p>No comments yet. Be the first to post!</p>
+        {% endif %}
+
+        <!-- Comment Form -->
+        <div class="comment-form">
+          {% if request.user.is_authenticated %}
+            <form method="POST" action="" class="d-flex flex-column">
+              {% csrf_token %}
+              <input type="text" name="body" placeholder="Type in a message..." class="form-control mt-2 mb-3" />
+              <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Participants Container -->
+    <div id="participants" class="col-12 col-md-4 mb-4 mb-md-0">
+      <div class="container border shadow-sm p-4 rounded pb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h4 class="text-primary">PARTICIPANTS</h4>
+          <span class="text-muted">
+            <i class="bi bi-person-circle"></i> {{ room.participants.count }} joined
+          </span>          
+        </div>
+        <hr class="mt-2 mb-4">
+        {% for user in participants %}
+          <div class="participant-item mb-2">
+            <a href="{% url 'profile' user.id %}" class="text-dark"><i class="bi bi-person"></i> {{ user.username }}</a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelector('input[name="body"]').focus();
+</script>
+
+{% endblock %}

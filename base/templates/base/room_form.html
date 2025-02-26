@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="col-md-6 offset-md-3 p-4 border rounded shadow-sm mb-4">
+    {% if page == 'create-room' %}
+        <h4 class="text-center mb-4"><strong>CREATE ROOM</strong></h4>
+    {% else %}
+    <h4 class="text-center mb-4"><strong>UPDATE ROOM</strong></h4>
+    {% endif %}
+    <hr class="mt-0 mb-4">
+    <div>
+        <form method="POST", action="" class="form-group">
+            {% csrf_token %}
+
+            {% if request.user.is_staff %}
+            <div class="form-group">
+                <label for="host" class="form-label">Room Host:</label>
+                {{ form.host }}
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="topic" class="form-label">Topic:</label>
+                <br>
+                {{ form.topic }}
+                <!-- <input required type="text" class="form-control" name="topic" list="topic-list" placeholder="Enter room topic..." />
+                <datalist id="topic-list">
+                    <select id="topic">
+                        {% for topic in topics %}
+                        <option value="{{ topic.id }}">{{ topic.name }}</option>
+                        {% endfor %}
+                    </select>
+                </datalist> -->
+            </div>
+
+            <div class="form-group">
+                <label for="name" class="form-label">Room Name:</label>
+                {{ form.name }}
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="form-label">Description:</label>
+                {{ form.description }}
+            </div>
+
+            <input type="submit" value="Submit" class="btn btn-primary btn-block mb-4"/>
+
+            <!-- {{form.as_p}}
+            <input type="submit" value="Submit" class="btn btn-primary btn-block mb-4"/> -->
+        
+        </form>
+    </div>
+</div>
+
+{% endblock %}

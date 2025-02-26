@@ -1,0 +1,54 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="home-container d-flex flex-column flex-md-row">
+        <!-- Left Section (Topics) -->
+        <div id="home-topics" class="flex-fill mb-3 mb-md-0">
+            {% include 'base/topics_component.html' %}
+        </div>
+
+        <!-- Middle Section (Feeds and Room Count) -->
+        <div id="rooms" class="flex-fill mb-3 mb-md-0" style="flex-grow: 2;">
+            <!-- Room count section -->
+            <div class="room-count mb-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h4><strong>CEREBRO ROOMS</strong></h4>
+                    {% if room_count == 1 %}
+                        <i class="bi bi-building-fill-gear"></i><medium> {{ room_count }} room available</medium>
+                    {% else %}
+                        <i class="bi bi-building-fill-gear"></i><medium> {{ room_count }} rooms available</medium>
+                    {% endif %}
+                </div>
+                <!-- Create Room Button Section -->
+                <div class="create-room mb-3">
+                    <div class="row">
+                        <div class="col-12 mb-2">
+                            <medium><a href="{% url 'create-room' %}" class="btn btn-outline-info">Create Room</a></medium>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <hr class="mt-2 mb-4">
+        
+            <!-- Feeds Component (Room Listings) -->
+            <div class="room-list-container">
+                <div class="room-list">
+                    {% include 'base/feeds_component.html' %}
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Right Section (Activity) -->
+        <div class="activity-list-container mb-3">
+            <div id="feeds" class="flex-fill mb-3 mb-md-0">
+                {% include 'base/activity_component.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

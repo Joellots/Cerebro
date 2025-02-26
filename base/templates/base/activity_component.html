@@ -1,0 +1,23 @@
+<h5>RECENT ACTIVITIES</h4>
+<hr>
+
+{% if room_messages %}
+    {% for message in room_messages %}
+        <div class="mb-3">
+            <small><a href="{% url 'profile' message.user.id %}" class="text-muted">@{{message.user}}</a> {{message.created|timesince}} ago</small>
+            <br>
+            <small>replied to <a href="{% url 'room' message.room.id %}" class="text-primary"><i>{{message.room}}</i></a></small>
+            
+            <p><medium>{{message}}</medium></p>
+            
+            {% if request.user == message.user or request.user.is_staff %}
+                <a class="btn btn-outline-danger btn-sm" href="{% url 'delete-message' message.id %}?next={{ request.path }}" class="text-danger"><small>Delete</small></a>
+            {% endif %} 
+            <hr class="mt-2 mb-4">
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="mb-3">
+        <p>No recent activities.</p>
+    </div>
+{% endif %}
