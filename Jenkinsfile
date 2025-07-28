@@ -1,6 +1,9 @@
 pipeline {
   
-  agent any
+  agent {
+    docker { image 'docker:24' }
+  }
+  
   environment {
     DB_HOST='postgres'
     DB_NAME='cerebro_db'
