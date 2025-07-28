@@ -1,7 +1,7 @@
 pipeline {
   
   agent {
-    docker { image 'docker:24' }
+    label 'jenkins-agent-dind'
   }
   
   environment {
