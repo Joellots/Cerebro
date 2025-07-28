@@ -5,7 +5,7 @@ pipeline {
     DB_HOST='postgres'
     DB_NAME='cerebro_db'
     DB_PORT='5432'
-    KUBECONFIG = credentials('k8s-credential')
+    // KUBECONFIG = credentials('k8s-credential')
     REGISTRY = 'joellots/cerebro'
   }
 
