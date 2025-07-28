@@ -30,10 +30,10 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
         ]){
-          sh "docker-compose -f docker-compose-db.yaml down --volumes --remove-orphans"
-          sh "docker-compose -f docker-compose-app.yaml down --volumes --remove-orphans"
-          sh "docker-compose -f docker-compose-db.yaml up -d --build"
-          sh "docker-compose -f docker-compose-app.yaml up -d --build"
+          sh "docker compose -f docker-compose-db.yaml down --volumes --remove-orphans"
+          sh "docker compose -f docker-compose-app.yaml down --volumes --remove-orphans"
+          sh "docker compose -f docker-compose-db.yaml up -d --build"
+          sh "docker compose -f docker-compose-app.yaml up -d --build"
         }
       }
     }
