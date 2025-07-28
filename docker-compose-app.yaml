@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  cerebro:
+    image: joellots/cerebro:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cerebro
+    restart: unless-stopped
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=cerebro_db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "8000:8000"
+    
