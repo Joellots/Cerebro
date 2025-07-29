@@ -1,6 +1,9 @@
 pipeline {
   
-  agent any
+  agent {
+    label 'jenkins-agent-dind'
+  }
+  
   environment {
     DB_HOST='postgres'
     DB_NAME='cerebro_db'
