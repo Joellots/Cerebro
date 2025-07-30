@@ -50,7 +50,7 @@ pipeline {
         sh "docker exec cerebro pytest --junitxml=test-results.xml --cov || true"
         sh "docker cp cerebro:/cerebro/test-results.xml /tmp/test-results.xml"
         sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/var/jenkins_home/workspace/cerebro_dev/test-results.xml"  
-        sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/home/jenkins_home/workspace/cerebro_dev/test-results.xml"  
+        sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/home/jenkins/workspace/cerebro_dev/test-results.xml"  
       }
       post {
         always {
