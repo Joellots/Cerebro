@@ -101,8 +101,8 @@ pipeline {
       withCredentials([
         usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
       ]){
-        sh "docker container rm cerebro --force"
-        sh "docker container rm postgres --force"
+        // sh "docker container rm cerebro --force"
+        // sh "docker container rm postgres --force"
       }
     }
   }
