@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: cerebro
     restart: unless-stopped
+    network_mode: host
     environment:
       - DB_HOST=${DB_HOST}
       - DB_NAME=cerebro_db

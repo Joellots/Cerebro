@@ -81,12 +81,11 @@ WSGI_APPLICATION = 'studybud.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cerebro_db',
-        'USER': 'postgres',
-        'PASSWORD': 'auth_string',
-        'HOST': 'localhost',
-        'PORT': '5432',
-
+        'NAME': os.getenv('DB_NAME', 'cerebro_db'),
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'auth_string'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
