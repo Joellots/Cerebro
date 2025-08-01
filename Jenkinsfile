@@ -26,7 +26,7 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
         ]) {
-          checkout scm
+          sh "git clone https://github.com/Joellots/Cerebro.git -b dev"
           sh "docker compose -f docker-compose-db.yaml up -d --build"
           sh "docker compose -f docker-compose-app.yaml up -d --build"
         }
