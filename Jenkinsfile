@@ -15,17 +15,6 @@ pipeline {
 
   stages {
 
-    stage('Checkout') {
-      agent {
-        kubernetes {
-          yamlFile 'k8s/jenkins-agent-dind.yaml'
-        }
-      }
-      steps {
-        checkout scm
-      }
-    }
-
     stage('Build') {
       agent {
         kubernetes {
@@ -37,6 +26,7 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
         ]) {
+          checkout scm
           sh "docker compose -f docker-compose-db.yaml up -d --build"
           sh "docker compose -f docker-compose-app.yaml up -d --build"
         }
@@ -77,7 +67,7 @@ pipeline {
         ]) {
           sh "echo $DH_PASSWORD | docker login -u $DH_USER --password-stdin"
           sh "docker tag ${REGISTRY}:latest ${REGISTRY}:${params.VERSION}"
-            sh "docker push ${REGISTRY}:${params.VERSION}"
+          sh "docker push ${REGISTRY}:${params.VERSION}"
         }
         
       }
