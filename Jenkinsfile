@@ -1,14 +1,10 @@
 pipeline {
-  
-  agent {
-    label 'jenkins-agent-dind'
-  }
-  
+  agent none
+
   environment {
     DB_HOST='postgres'
     DB_NAME='cerebro_db'
     DB_PORT='5432'
-    // KUBECONFIG = credentials('k8s-credential')
     REGISTRY = 'joellots/cerebro'
   }
 
@@ -16,41 +12,50 @@ pipeline {
     choice(name: 'VERSION', choices: ['v1.1.0', 'v1.2.0', 'v1.3.0'], description: '')
     booleanParam(name: 'executeTests', defaultValue: false, description: '')
   }
-  
+
   stages {
-    
+
     stage('Checkout') {
+      agent {
+        kubernetes {
+          yamlFile 'k8s/jenkins-agent-dind.yaml'
+        }
+      }
       steps {
         checkout scm
       }
     }
-    stage("build") {      
+
+    stage('Build') {
+      agent {
+        kubernetes {
+          yamlFile 'k8s/jenkins-agent-dind.yaml'
+        }
+      }
       steps {
         echo 'Building the application...'
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
-        ]){
-          sh "docker container rm cerebro --force"
-          sh "docker container rm db --force"
+        ]) {
           sh "docker compose -f docker-compose-db.yaml up -d --build"
           sh "docker compose -f docker-compose-app.yaml up -d --build"
         }
       }
     }
-    
-    stage("test") {
+
+    stage('Test') {
       when {
-        expression {
-          params.executeTests == true
+        expression { params.executeTests }
+      }
+      agent {
+        kubernetes {
+          yamlFile 'k8s/jenkins-agent-dind.yaml'
         }
       }
-      
       steps {
-        echo 'Testing the application...'
+        echo 'Running tests...'
         sh "docker exec cerebro pytest --junitxml=test-results.xml --cov || true"
-        sh "docker cp cerebro:/cerebro/test-results.xml /tmp/test-results.xml"
-        sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/var/jenkins_home/workspace/cerebro_dev/test-results.xml"  
-        sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/home/jenkins/workspace/cerebro_dev/test-results.xml"  
+        sh "docker cp cerebro:/cerebro/test-results.xml ./test-results.xml"
       }
       post {
         always {
@@ -60,50 +65,57 @@ pipeline {
       }
     }
 
-    stage('dockerhub-login'){
-      steps{
-        echo 'Logging into Dockerhub...'
+    stage('Push Image') {
+      agent {
+        kubernetes {
+          yamlFile 'k8s/jenkins-agent-dind.yaml'
+        }
+      }
+      steps {
         withCredentials([
           usernamePassword(credentialsId: 'joellots-dockerhub', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASSWORD')
-        ]){
+        ]) {
           sh "echo $DH_PASSWORD | docker login -u $DH_USER --password-stdin"
+          sh "docker tag ${REGISTRY}:latest ${REGISTRY}:${params.VERSION}"
+            sh "docker push ${REGISTRY}:${params.VERSION}"
         }
+        
       }
     }
 
-    stage('push'){
-      steps {
-        sh "docker tag ${REGISTRY}:latest ${REGISTRY}:${params.VERSION}"
-        sh "docker push ${REGISTRY}:${params.VERSION}"
-      }
-    }   
-    
-
-    stage("deploy-app") { 
+    stage('Deploy App') {
       agent {
         kubernetes {
-          yamlFile 'k8s/cerebro.yaml'
-        } 
+          yamlFile 'k8s/jenkins-agent-dind.yaml'
+        }
       }
       steps {
-        echo "Deployed Cerebro Application"
-        echo "Deployed version ${params.VERSION}"
+        echo "Deploying version ${params.VERSION} of Cerebro Application"
         input message: 'Do you want to continue?', ok: 'Yes'
-      }
-    }    
-  }
+        echo "Pushing new deployment manifest to GitOps repo..."
 
-  post {
-    always{
-      echo 'Logging out of Docker...'
-      sh "docker logout"
+        withCredentials([
+        usernamePassword(credentialsId: 'gitops-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')
+        ]) {
+        sh """
+            git config --global user.email "${GIT_USER}@gmail.com"
+            git config --global user.name "${GIT_USER}"
 
-      echo 'Removing Containers...'
-      withCredentials([
-        usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
-      ]){
-        // sh "docker container rm cerebro --force"
-        // sh "docker container rm postgres --force"
+
+            git clone https://${GIT_USER}:${GIT_PASS}@gitlab.com/cerebro393109/gitops-cerebro.git
+            cd gitops-cerebro/base
+
+            sed -i 's|image: joellots/cerebro:.*|image: joellots/cerebro:${params.VERSION}|' deployment.yaml
+            
+            cd ..
+            git init
+            git add .
+            git commit -m "Deploy Cerebro ${params.VERSION} via CI pipeline"
+            git branch -M main
+            git remote add origin https://${GIT_USER}:${GIT_PASS}@gitlab.com/cerebro393109/gitops-cerebro.git
+            git push origin main
+        """
+        }
       }
     }
   }
