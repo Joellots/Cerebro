@@ -2,7 +2,7 @@ pipeline {
   agent none
 
   environment {
-    DB_HOST='postgres'
+    DB_HOST='localhost'
     DB_NAME='cerebro_db'
     DB_PORT='5432'
     REGISTRY = 'joellots/cerebro'
