@@ -105,8 +105,8 @@ pipeline {
             kind: Pod
             spec:
             containers:
-            - name: gitleaks
-              image: zricethezav/gitleaks
+            - name: semgrep
+              image: semgrep/semgrep
               command:
               - cat
               tty: true
