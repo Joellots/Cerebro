@@ -21,7 +21,9 @@ pipeline {
         agent {
         label 'jenkins-agent-dind'
       }
+      steps {
         checkout scm
+      }
     }
 
 
