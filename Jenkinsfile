@@ -75,10 +75,10 @@ pipeline {
             spec:
             containers:
             - name: gitleaks
-                image: zricethezav/gitleaks
-                command:
-                - cat
-                tty: true
+              image: zricethezav/gitleaks
+              command:
+              - cat
+              tty: true
             '''
         }
       }
@@ -104,11 +104,11 @@ pipeline {
             kind: Pod
             spec:
             containers:
-            - name: semgrep
-                image: semgrep/semgrep
-                command:
-                - cat
-                tty: true
+            - name: gitleaks
+              image: zricethezav/gitleaks
+              command:
+              - cat
+              tty: true
             '''
         }
       }
