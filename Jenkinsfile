@@ -83,6 +83,7 @@ pipeline {
         }
       }
       steps {
+        checkout scm
         sh '''
             echo "[INFO] Running Gitleaks scan..."
             gitleaks detect --verbose --source . -f json -r gitleaks.json || true
@@ -113,6 +114,7 @@ pipeline {
         }
       }
       steps {
+        checkout scm
         sh '''
             echo "[INFO] Running Semgrep scan..."
             semgrep ci --json --output semgrep.json
