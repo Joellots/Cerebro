@@ -26,13 +26,12 @@ pipeline {
       }
     }
 
-
     stage('Build') {
       agent {
         label 'jenkins-agent-dind'
       }
       steps {
-        echo 'Building the application...'
+        echo '[INFO] Building the application...'
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
         ]) {
@@ -64,7 +63,6 @@ pipeline {
         }
       }
     }
-
 
     stage('Gitleaks Secret Scan') {
       agent {
@@ -128,7 +126,6 @@ pipeline {
       }
     }
 
-
     stage('Push Image') {
       agent {
         label 'jenkins-agent-dind'
@@ -137,6 +134,7 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'joellots-dockerhub', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASSWORD')
         ]) {
+          echo "[INFO] Pushing image to Dockerhub..."
           sh "echo $DH_PASSWORD | docker login -u $DH_USER --password-stdin"
           sh "docker tag ${REGISTRY}:latest ${REGISTRY}:${params.VERSION}"
           sh "docker push ${REGISTRY}:${params.VERSION}"
@@ -145,7 +143,6 @@ pipeline {
       }
     }
 
-
     stage('deploy App') {
       agent {
         kubernetes {
@@ -153,9 +150,9 @@ pipeline {
         }
       }
       steps {
-        echo "Deploying version ${params.VERSION} of Cerebro Application"
+        echo "[INFO] Deploying version ${params.VERSION} of Cerebro Application"
         input message: 'Do you want to continue?', ok: 'Yes'
-        echo "Pushing new deployment manifest to GitOps repo..."
+        echo "[INFO] Pushing new deployment manifest to GitOps repo..."
 
         withCredentials([
         usernamePassword(credentialsId: 'gitops-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')
