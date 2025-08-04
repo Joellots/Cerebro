@@ -7,20 +7,6 @@ metadata:
   namespace: jenkins
 spec:
   containers:
-    - name: dind-daemon
-      image: docker:28.3-dind
-      securityContext:
-        privileged: true 
-      env:
-        - name: DOCKER_TLS_CERTDIR
-          value: ""
-      resources:
-        limits:
-          cpu: "500m"
-          memory: "512Mi"
-      volumeMounts:
-        - name: docker-graph-storage
-          mountPath: /var/lib/docker
     - name: build-container
       image: joellots/jenkins-agent-dind:lts 
       imagePullPolicy: Always
@@ -30,10 +16,16 @@ spec:
       env:
         - name: DOCKER_HOST
           value: tcp://localhost:2375
-      resources:
-        limits:
-          cpu: "500m"
-          memory: "512Mi"
+    - name: dind-daemon
+      image: docker:28.3-dind
+      securityContext:
+        privileged: true 
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+      volumeMounts:
+        - name: docker-graph-storage
+          mountPath: /var/lib/docker
   volumes:
     - name: docker-graph-storage
       emptyDir: {}
