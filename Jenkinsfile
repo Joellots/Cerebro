@@ -36,8 +36,8 @@ pipeline {
         withCredentials([
           usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASSWORD')
         ]) {
-          sh "docker container rm cerebro --force"
-          sh "docker container rm postgres --force"
+          sh "docker container rm cerebro --force || true"
+          sh "docker container rm postgres --force || true"
           sh "docker compose -f docker-compose-db.yaml up -d --build"
           sh "docker compose -f docker-compose-app.yaml up -d --build"
         }
@@ -55,7 +55,7 @@ pipeline {
         echo 'Running tests...'
         sh "docker exec cerebro pytest --junitxml=test-results.xml --cov || true"
         sh "docker cp cerebro:/cerebro/test-results.xml /tmp/test-results.xml" 
-        sh "docker cp /tmp/test-results.xml build-container:/home/jenkins/workspace/cerebro_dev/test-results.xml"  
+        sh "docker cp /tmp/test-results.xml jenkins-agent-dind:/home/jenkins/workspace/cerebro_dev/test-results.xml"  
       }
       post {
         always {
